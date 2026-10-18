@@ -118,6 +118,7 @@ const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 async function dec(d,w){const k=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("loc:"+w)));const r=Uint8Array.from(atob(d),c=>c.charCodeAt(0)).map((b,i)=>b^k[i%32]);return JSON.parse(new TextDecoder().decode(r))}
 const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+const clock=ms=>new Date(ms).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const parseTime=t=>{const m=String(t).trim().match(/^(\d{1,2})\s*[:h.,]\s*(\d{1,2})$/);return m?(Number(m[1])*60+Number(m[2]))*1000:null};
 const load=(k,d)=>{try{const x=JSON.parse(localStorage.getItem(k)||"null");return x?Object.assign(d,x):d}catch(e){return d}};
 const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -238,11 +239,11 @@ function renderGuard(){
     const live=db&&teams.some(t=>t.start&&!t.end);
     let team=null,name="",ms=null;
     if(live){team=teams.find(t=>t.id===$("teamSel").value);if(!team){m.textContent="Escolham a equipe primeiro.";return}}
-    else{name=$("vName").value.trim();ms=parseTime($("vTime").value);if(!name){m.textContent="Digite o nome da equipe.";return}if(ms===null){m.textContent="Digite o tempo do celular no formato 12:34.";return}}
+    else{name=$("vName").value.trim();if(!name){m.textContent="Digite o nome da equipe.";return}}
     if(!w){m.textContent="Preencham as palavras primeiro.";return}
     if(await sha("ada:"+w)!==FINAL){m.textContent="O cofre continua trancado. Testem outra combinação.";return}
     if(team){const end=Date.now();await db.collection("teams").doc(team.id).update({end}).catch(()=>{});m.className="msg";m.textContent=`Cofre aberto! ${team.name}: ${fmt(end-team.start)}.`}
-    else{const used=LIMIT-ms;G.results.push({id:Date.now().toString(36),name,time:Math.max(0,used)});gsave();m.className="msg";m.textContent=`Cofre aberto! ${name}: ${fmt(Math.max(0,used))}.`;renderGuardBoard()}
+    else{const at=Date.now();G.results.push({id:at.toString(36),name,at});gsave();m.className="msg";m.textContent=`Cofre aberto! ${name}, às ${clock(at)}.`;renderGuardBoard()}
     ins.forEach(x=>x.value="");renderWho();
   };
   foot(`<button class="ghost small" id="leaveGuard">Sair do painel</button>`);
@@ -251,7 +252,7 @@ function renderWho(){
   const who=$("who");if(!who)return;
   const open=db?teams.filter(t=>t.start&&!t.end):[];
   if(open.length){who.innerHTML=`<label for="teamSel">EQUIPE</label><select id="teamSel" class="txt">${open.map(t=>`<option value="${t.id}">${esc(t.name)} · ${(t.solved||[]).filter(Boolean).length}/6</option>`).join("")}</select>`}
-  else{who.innerHTML=`<div class="row"><div style="flex:1 1 180px;display:flex;flex-direction:column;gap:6px"><label for="vName">EQUIPE</label><input class="txt" id="vName" maxlength="24" placeholder="Nome da equipe"></div><div style="flex:0 1 150px;display:flex;flex-direction:column;gap:6px"><label for="vTime">RESTA NO CELULAR</label><input class="txt" id="vTime" inputmode="numeric" placeholder="12:34"></div></div>`}
+  else{who.innerHTML=`<div style="display:flex;flex-direction:column;gap:6px"><label for="vName">EQUIPE</label><input class="txt" id="vName" maxlength="24" placeholder="Nome da equipe"></div>`}
 }
 function renderGuardBoard(){
   const b=$("board");if(!b)return;
@@ -262,19 +263,19 @@ function renderGuardBoard(){
   if(db&&teams.length){
     rows=teams.filter(t=>t.start).map(t=>{const n=(t.solved||[]).filter(Boolean).length,out=!t.end&&teamTime(t)>=LIMIT;return{id:t.id,name:t.name,n,end:!!t.end,out,time:t.end?t.end-t.start:null,t}});
   }else{
-    rows=G.results.map(r=>({id:"r:"+r.id,name:r.name,n:6,end:true,out:false,time:r.time}));
+    rows=G.results.map(r=>({id:"r:"+r.id,name:r.name,n:6,end:true,out:false,time:r.at,at:r.at}));
   }
   rows.sort((a,b)=>(a.end?0:a.out?2:1)-(b.end?0:b.out?2:1)||(a.end?a.time-b.time:b.n-a.n));
   const fin=rows.filter(r=>r.end).length, run=rows.filter(r=>!r.end&&!r.out).length;
   let html=`<div class="kpis"><div class="kpi"><b>${rows.length}</b><span>EQUIPES</span></div><div class="kpi"><b>${run}</b><span>EM JOGO</span></div><div class="kpi"><b>${fin}</b><span>COFRE ABERTO</span></div></div>`;
   if(!rows.length)html+=`<p class="note">${db?'Nenhuma equipe começou ainda. Quando uma equipe tocar em "Iniciar", ela aparece aqui.':"Os resultados aparecem aqui conforme as equipes abrem o cofre."}</p>`;
-  else html+=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>ACERTOS</th><th>TEMPO</th><th>SITUAÇÃO</th><th></th></tr></thead><tbody>${rows.map((r,k)=>`<tr>
+  else html+=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>ACERTOS</th><th>${db&&teams.length?"TEMPO":"COFRE ABERTO"}</th><th>SITUAÇÃO</th><th></th></tr></thead><tbody>${rows.map((r,k)=>`<tr>
     <td class="pos">${k+1}</td><td><b>${esc(r.name||"Sem nome")}</b></td>
     <td><div class="pips">${Array.from({length:6},(_,j)=>`<span class="pip ${j<r.n?"on":""}"></span>`).join("")}<span class="pip vault ${r.end?"on":""}"></span></div><span class="count">${r.n}/6${r.end?" + cofre":""}</span></td>
-    <td ${r.t&&!r.end?`data-tt="${r.id}"`:""}>${r.end?fmt(r.time):fmt(Math.min(teamTime(r.t),LIMIT))}</td>
+    <td ${r.t&&!r.end?`data-tt="${r.id}"`:""}>${r.at?"às "+clock(r.at):r.end?fmt(r.time):fmt(Math.min(teamTime(r.t),LIMIT))}</td>
     <td>${r.end?`<span class="st win">Cofre aberto</span>`:r.out?`<span class="st out">Tempo esgotado</span>`:`<span class="st run">${r.n===6?"Indo ao cofre":"No enigma "+(r.n+1)}</span>`}</td>
     <td><button class="ghost small" data-del="${r.id}">Remover</button></td></tr>`).join("")}</tbody></table></div>
-    <p class="note">Ordem: primeiro quem abriu o cofre, pelo menor tempo; depois quem ainda joga, por número de acertos.</p>`;
+    <p class="note">${db&&teams.length?"Ordem: primeiro quem abriu o cofre, pelo menor tempo; depois quem ainda joga, por número de acertos.":"Ordem: quem abriu o cofre primeiro."}</p>`;
   b.innerHTML=html;
 }
 
