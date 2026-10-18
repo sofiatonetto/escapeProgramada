@@ -82,6 +82,12 @@ footer .row{justify-content:center}
 footer input.txt{flex:0 1 170px;font-size:13px;padding:8px 10px}
 .note{font-size:12px;color:var(--muted);text-align:center}
 @media (prefers-reduced-motion:no-preference){.slot.got{animation:pop .45s ease}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.08)}100%{transform:scale(1)}}}
+.reveal{border:2px dashed var(--plum);border-radius:8px;padding:14px;display:flex;gap:14px;align-items:center;background:var(--white)}
+.reveal p{font-size:14px}
+select.txt{appearance:auto}
+#who input.txt,#who select.txt{flex:none;width:100%}
+.reveal{flex-direction:column;align-items:flex-start;gap:6px}
+.reveal .big{text-align:left;white-space:nowrap}
 </style>
 
 <div class="wrap">
@@ -94,57 +100,62 @@ footer input.txt{flex:0 1 170px;font-size:13px;padding:8px 10px}
 </div>
 
 <script>
-const HASH=["c659af25f9b8ff6b3e25b6ba1074af19b7030e4e18a8668e70be9b8c7457b81d", "c189f13e88aed7619f362ec6e7c304150ae7bcaa427560ebadbd33be380e5ec8", "43387906e5e5c54580506f8e0bed381e61a36bc9dccd84b7c41ab46c4afffa07", "9dd2e164372e9cbab6adf6d27561a57a00af74d92a0e558c0cb60580d4013103", "b6b08b74b8e65297987f1e6fff937240c206da411125856cad2af7e7cfed72e9", "8d01fd6313c9521d7c3b85d2c44b0658a586c7f8fee4d3a565dd7c02ffb3a1a5"];
-const DATA=["p0OwareNdQ/6zN09iitOJ4qgJxoU5fxhKaKssuyf5DSzQblo/sg6Y83wjotSJyOJYuxjWxb7sSEp45ey5t6iMbMPuy2jjRYty/qO31luI5Ji8GpIFv2xP2rhjKOtn+co/Asf6a3IJSKf8JObXHgtxnY=", "iCMU7/I0IAOEMKE0FRCetJdejCnMAUmH5Qcy48Mww4SCdBHtq3VmLOVlDqNBN7LW2LxIbO1oG9mqTz+1ljzBqJJyWKOhemU4BrkOo0EgvpTW8FNouDsE0axLMq7XMpw=", "5pNFwoB1K65WfdQUuLH9PRdh7j0J47dOb62/eDQgnsD4kUOV1CFoynJ9YmAxg8YdVizufg7h/gEvkr9jeyOUjfnUWpTbdWqLYDw4geU=", "dPKQtTfX494qAdt5MdmaptjejYfHFaicQ0qrBp7mPRF7v9z4Y5OkuQ4BcKB398rnmT9CZl5aqrxJH+4H3fk8C32x0rdImuHwAUZ1DbvrlKqVmcXGlVTnrkEf7wye9TcRe6KTuS+K", "A8hsOHXwyQ9wDcPYjipFvm+iHFkmzrQBQ2mHkH+YVL8XymZvO6WZIxg49JVs/hCA3uyTFnOAsxlZLNar0l1W9heZLDo5sYwtS2z02DzvpkHURlMadcysQgo6yqw/3kw=", "DpcxYqJVSGGb6AiqkEYl0QPCHoH9fIOCC8xvlWbyTmoWdvczuAGpiLfovnLUaRfRoAYesH/zw8NLxT6OZoZ3aQHQMGD5GkpDr6yjaXO7FpiuTx6inBnaw1vAJGzl8Gh3GsE4J/1VBQK5p6xv1SZGjA=="];
+const STX=[{"h": "c659af25f9b8ff6b3e25b6ba1074af19b7030e4e18a8668e70be9b8c7457b81d", "d": "p0OwareNdQ/6zN09iitOJ4qgJxoU5fxhKaKssuyf5DSzQblo/sg6Y83wjotSJyOJYuxjWxb7sSEp45ey5t6iMbMPuy2jjRYty/qO31luI5Ji8GpIFv2xP2rhjKOtn+co/Asf6a3IJSKf8JObXHgtxnY="}, {"h": "c189f13e88aed7619f362ec6e7c304150ae7bcaa427560ebadbd33be380e5ec8", "d": "iCMU7/I0IAOEMKE0FRCetJdejCnMAUmH5Qcy48Mww4SCdBHtq3VmLOVlDqNBN7LW2LxIbO1oG9mqTz+1ljzBqJJyWKOhemU4BrkOo0EgvpTW8FNouDsE0axLMq7XMpw="}, {"h": "43387906e5e5c54580506f8e0bed381e61a36bc9dccd84b7c41ab46c4afffa07", "d": "5pNFwoB1K65WfdQUuLH9PRdh7j0J47dOb62/eDQgnsD4kUOV1CFoynJ9YmAxg8YdVizufg7h/gEvkr9jeyOUjfnUWpTbdWqLYDw4geU="}, {"h": "9dd2e164372e9cbab6adf6d27561a57a00af74d92a0e558c0cb60580d4013103", "d": "dPKQtTfX494qAdt5MdmaptjejYfHFaiAQlvuSc7kPRVqpJPkLZCg9wdAdO5n8dzr1tygyN1c5KhA/CEakrY/Gi+zlPZglqy5C0Q5rXT2zPiX0sfY"}, {"h": "b6b08b74b8e65297987f1e6fff937240c206da411125856cad2af7e7cfed72e9", "d": "A8hsOHXwyQ9wDcPYjipFvm+iHFkmzrQBQ2mHkH+YVL8XiW9oPbWGbFUp/4wj7wyT3w9bVWCDtU9ZOtGqdZVU7FbIfQ=="}, {"h": "8d01fd6313c9521d7c3b85d2c44b0658a586c7f8fee4d3a565dd7c02ffb3a1a5", "d": "DpcxYqJVSGGb6AiqkEYl0QPCHoH9fIOCC8xvlWbyTmoWdvczuAGpiLfovnLUaRfRoAYesH/zw8NLxT6OZoZ3aQHQMGD5GkpDr6yjaXO7FpiuTx6inBnaw1vAJGzl8Gh3GsE4J/1VBQK5p6xv1SZGjA=="}];
 const FINAL="0716b17646ca7d32dcbf3decb71b6a3fcef0fa37af22abcf0893b3aaf879dc28";
 const E=[
  {name:"A carta de dupla leitura",lvl:"NÍVEL 1 · ADA",len:6},
  {name:"A transmissão",lvl:"NÍVEL 1 · ADA",len:5},
  {name:"A frase do coworking",lvl:"NÍVEL 2 · COMPUTAÇÃO",len:5},
  {name:"Pontos e traços",lvl:"NÍVEL 2 · COMPUTAÇÃO",len:6},
- {name:"Quem sou eu?",lvl:"NÍVEL 3 · MULHERES",len:5},
- {name:"A mensagem das pioneiras",lvl:"NÍVEL 3 · MULHERES",len:9}
+ {name:"Quem sou eu?",lvl:"NÍVEL 3 · MULHERES NA TECNOLOGIA",len:5},
+ {name:"A mensagem das pioneiras",lvl:"NÍVEL 3 · MULHERES NA TECNOLOGIA",len:9}
 ];
 const FINAL_WORDS=[7,9,2,7,7];
-const N=6, LIMIT=40*60*1000, PIN="1815", KEY="codigo-de-ada-v4";
+const N=6, LIMIT=40*60*1000, PIN="1815", KEY="codigo-de-ada-v5", GKEY="codigo-de-ada-guardia-v1";
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
 async function dec(d,w){const k=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("loc:"+w)));const r=Uint8Array.from(atob(d),c=>c.charCodeAt(0)).map((b,i)=>b^k[i%32]);return JSON.parse(new TextDecoder().decode(r))}
 const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+const parseTime=t=>{const m=String(t).trim().match(/^(\d{1,2})\s*[:h.,]\s*(\d{1,2})$/);return m?(Number(m[1])*60+Number(m[2]))*1000:null};
+const load=(k,d)=>{try{const x=JSON.parse(localStorage.getItem(k)||"null");return x?Object.assign(d,x):d}catch(e){return d}};
+const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 
-/* ---------- this phone's state ---------- */
-const blank=()=>({mode:"team",id:null,name:"",start:null,solved:Array(N).fill(null),info:Array(N).fill(null),end:null});
-let S=blank();
-try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x)S=Object.assign(blank(),x)}catch(e){}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+/* ---------- this phone ---------- */
+const blank=()=>({mode:"team",id:null,name:"",start:null,solved:Array(N).fill(null),info:Array(N).fill(null),showing:null,end:null});
+let S=load(KEY,blank());
+const save=()=>store(KEY,S);
+/* ---------- guardiã device (offline results) ---------- */
+let G=load(GKEY,{results:[]});
+const gsave=()=>store(GKEY,G);
 
-/* ---------- shared scoreboard (db, optional) ---------- */
-let db=null, dbReady=false, teams=[], unsub=null, writing=Promise.resolve();
-(async()=>{try{db=await window.claude?.use?.("db")}catch(e){db=null}dbReady=true;if(S.mode==="guard")subscribe();if(S.id)push();render()})();
+/* ---------- shared scoreboard (only inside Claude) ---------- */
+let db=null, dbReady=false, teams=[], unsubAll=null, unsubMe=null, writing=Promise.resolve();
+(async()=>{await new Promise(r=>setTimeout(r,0));try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){db=null}dbReady=true;if(S.mode==="guard")subscribeAll();if(S.id){push();watchMe()}render()})();
 function push(){
   if(!db||!S.id)return;
-  const body={name:S.name,start:S.start,solved:S.solved,end:S.end,count:S.solved.filter(Boolean).length};
-  writing=writing.then(()=>db.collection("teams").doc(S.id).set(body)).catch(()=>{});
+  const body={name:S.name,start:S.start,solved:S.solved,count:S.solved.filter(Boolean).length};
+  writing=writing.then(()=>db.collection("teams").doc(S.id).get()).then(snap=>{const prev=snap.exists?snap.data():{};return db.collection("teams").doc(S.id).set({...body,end:prev.end||null})}).catch(()=>{});
 }
-function subscribe(){
-  if(!db||unsub)return;
-  unsub=db.collection("teams").onSnapshot(snap=>{teams=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{unsub=null});
-}
+function watchMe(){if(!db||!S.id||unsubMe)return;const myId=S.id;unsubMe=db.collection("teams").doc(myId).onSnapshot(d=>{const v=d.exists?d.data():null;if(S.id===myId&&S.mode==="team"&&v&&v.end&&!S.end){S.end=v.end;save();render()}},()=>{unsubMe=null})}
+function subscribeAll(){if(!db||unsubAll)return;unsubAll=db.collection("teams").onSnapshot(s=>{teams=s.docs.map(d=>({id:d.id,...d.data()}));if(S.mode==="guard")renderGuardBoard()},()=>{unsubAll=null})}
+
+const bar=t=>`<div class="bar"><span class="dot" style="background:var(--ember)"></span><span class="dot" style="background:var(--line)"></span><span class="dot" style="background:var(--violet)"></span><span class="t">${t}</span></div>`;
+const foot=h=>{$("foot").innerHTML=h};
+const boxes=(n,attrs="")=>`<input class="boxes" style="--n:${n}" maxlength="${n}" autocomplete="off" autocapitalize="characters" spellcheck="false" ${attrs}>`;
 
 function render(){
   if(S.mode==="guard")return renderGuard();
   if(!S.start)return renderStart();
   renderGame();
 }
-const foot=h=>{$("foot").innerHTML=h};
-const bar=t=>`<div class="bar"><span class="dot" style="background:var(--ember)"></span><span class="dot" style="background:var(--line)"></span><span class="dot" style="background:var(--violet)"></span><span class="t">${t}</span></div>`;
 
+/* ---------- team: start ---------- */
 function renderStart(){
   $("app").innerHTML=`<section class="card">${bar("notas_de_ada.txt")}<div class="body">
     <p class="story">Em 1843, Ada Lovelace escreveu o primeiro programa da história. Antes de partir, ela escondeu suas notas e espalhou pistas pelo prédio.</p>
-    <p>São 6 enigmas em 3 níveis. Cada resposta certa libera sílabas da resposta final e uma charada que leva à próxima sala. Vocês têm <b>40 minutos</b>.</p>
+    <p>São 6 enigmas. Cada resposta certa libera sílabas da resposta final e uma charada que leva à próxima sala. Vocês têm <b>40 minutos</b>.</p>
     <form id="f" style="display:flex;flex-direction:column;gap:10px">
       <label for="team">NOME DA EQUIPE</label>
       <input class="txt" id="team" maxlength="24" autocomplete="off" placeholder="Ex.: As Analíticas">
@@ -152,102 +163,127 @@ function renderStart(){
       <div class="row"><button>Iniciar</button></div>
     </form></div></section>`;
   $("f").onsubmit=e=>{e.preventDefault();const n=$("team").value.trim();if(!n){$("msg").className="msg no";$("msg").textContent="Digitem o nome da equipe primeiro.";return}
-    S.name=n;S.start=Date.now();S.id=("t"+Date.now().toString(36)+Math.random().toString(36).slice(2,8));save();push();render()};
+    S.name=n;S.start=Date.now();S.id="t"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);save();push();watchMe();render()};
   $("team").oninput=()=>{$("msg").textContent=""};
   foot(`<div class="row"><input class="txt" id="pin" inputmode="numeric" aria-label="Senha da Guardiã" placeholder="Senha da Guardiã"><button class="ghost small" id="pinBtn">Painel da Guardiã</button></div><div class="msg no" id="pinMsg"></div>`);
 }
 
-const current=()=>S.solved.findIndex(x=>!x);
+/* ---------- team: game (one enigma at a time) ---------- */
+const solvedCount=()=>S.solved.filter(Boolean).length;
 const timeLeft=()=>LIMIT-((S.end||Date.now())-S.start);
-
 function renderGame(){
-  const cur=current(), done=cur===-1, out=!S.end&&timeLeft()<=0;
-  const left=S.end?0:S.solved.filter(x=>!x).length+1;
-  let html=`<div class="status"><div class="team">${esc(S.name)}</div><div class="clock" id="clock">${fmt(timeLeft())}</div><div class="left">${S.end?"Cofre<br>aberto":`Faltam<br>${left} de 7`}</div></div>
+  const cur=S.solved.findIndex(x=>!x), out=!S.end&&timeLeft()<=0, n=solvedCount();
+  let html=`<div class="status"><div class="team">${esc(S.name)}</div><div class="clock" id="clock">${fmt(timeLeft())}</div><div class="left">Resolvidos<br><b>${n} de ${N}</b></div></div>
   <div class="slots" aria-label="Sílabas conquistadas">${S.info.map(i=>`<div class="slot ${i?"got":""}">${i?esc(i.l):"?"}</div>`).join("")}</div>`;
-  if(S.end)html+=`<section class="card"><div class="body" style="text-align:center"><label>COFRE ABERTO</label><p class="story">A Máquina Analítica de Charles Babbage nunca chegou a ser construída, mas Ada escreveu para ela o primeiro programa da história.</p><div class="big">${fmt(S.end-S.start)}</div><p>Mostrem esta tela para a Guardiã.</p></div></section>`;
-  else if(out)html+=`<section class="card"><div class="body" style="text-align:center"><label>TEMPO ESGOTADO</label><p class="story">As notas de Ada continuam escondidas.</p><p>Voltem ao auditório e mostrem esta tela para a Guardiã: vocês resolveram ${S.solved.filter(Boolean).length} de 6 enigmas.</p></div></section>`;
-  E.forEach((e,i)=>{
-    const st=S.solved[i]?"done":(i===cur&&!out?"open":"locked");
-    html+=`<section class="enig ${st==="locked"?"locked":st==="done"?"done":""}"><div class="head"><span class="name">${i+1}. ${st==="locked"?"🔒 ":""}${esc(e.name)}</span>${st==="done"?`<span class="badge">✓ resolvido</span>`:`<span class="lvl">${e.lvl}</span>`}</div>`;
-    if(st==="open")html+=`<form class="row" data-i="${i}"><input class="boxes" style="--n:${e.len}" maxlength="${e.len}" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Resposta do enigma ${i+1}, ${e.len} letras"><button>Verificar</button></form><div class="count">${e.len} letras</div><div class="msg"></div>`;
-    else if(st==="locked")html+=`<input class="boxes" style="--n:${e.len}" disabled aria-label="Enigma bloqueado"><div class="count">${e.len} letras</div>`;
-    else if(S.info[i]){
-      const last=(cur===-1?N-1:cur-1)===i&&!S.end;
-      html+=`<div class="count">Resposta: ${esc(S.info[i].w)} · sílabas ${esc(S.info[i].l)}</div>${last?`<div class="next"><label>PRÓXIMA PISTA</label><p class="story">${esc(S.info[i].h)}</p></div>`:""}`;
-    }
-    html+=`</section>`;
-  });
-  const vOpen=done&&!S.end&&!out;
-  html+=`<section class="enig ${S.end?"done":vOpen?"":"locked"}"><div class="head"><span class="name">${vOpen||S.end?"":"🔒 "}O cofre</span>${S.end?`<span class="badge">✓ aberto</span>`:`<span class="lvl">FINAL · AUDITÓRIO</span>`}</div>`;
-  if(vOpen)html+=`<p class="hint">Ada escreveu o primeiro programa da história para ela. O que era, e quem a inventou?</p>
-    <form data-i="final" style="display:flex;flex-direction:column;gap:10px"><div class="words">${FINAL_WORDS.map((n,k)=>`<input class="boxes" style="--n:${n}" maxlength="${n}" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Palavra ${k+1}, ${n} letras">`).join("")}</div>
-    <div class="count">5 palavras · 7, 9, 2, 7 e 7 letras</div><div class="row"><button>Abrir o cofre</button></div><div class="msg"></div></form>`;
-  else if(!S.end)html+=`<div class="words">${FINAL_WORDS.map(n=>`<input class="boxes" style="--n:${n}" disabled aria-label="Bloqueado">`).join("")}</div><div class="count">5 palavras</div>`;
-  html+=`</section>`;
-  if(dbReady&&!db)html+=`<p class="note">Este celular não está no placar ao vivo. O jogo funciona normalmente: mostrem o tempo final à Guardiã.</p>`;
+  if(S.end){
+    html+=`<section class="card">${bar("notas_originais.txt")}<div class="body" style="text-align:center"><label>COFRE ABERTO</label><p class="story">A Máquina Analítica de Charles Babbage nunca chegou a ser construída, mas Ada escreveu para ela o primeiro programa da história.</p><div class="big">${fmt(S.end-S.start)}</div></div></section>`;
+  }else if(out){
+    html+=`<section class="card">${bar("tempo_esgotado.txt")}<div class="body" style="text-align:center"><label>TEMPO ESGOTADO</label><p class="story">As notas de Ada continuam escondidas.</p><p>Voltem ao auditório e mostrem esta tela para a Guardiã: vocês resolveram ${n} de ${N} enigmas.</p></div></section>`;
+  }else if(S.showing!==null&&S.info[S.showing]){
+    const i=S.showing, inf=S.info[i], last=i===N-1;
+    html+=`<section class="card">${bar(`enigma_${i+1}_resolvido.txt`)}<div class="body">
+      <div class="reveal"><div class="big" style="font-size:26px">${esc(inf.l)}</div><p>Resposta certa: ${esc(inf.w)}. Essas sílabas já estão guardadas lá em cima.</p></div>
+      <label>${last?"PRÓXIMO PASSO":"PRÓXIMA PISTA"}</label><p class="story">${esc(inf.h)}</p>
+      ${last?`<p>Levem este celular até a Guardiã. Ela tem o cofre, e lá vocês digitam a resposta final com as sílabas.</p>`:`<div class="row"><button id="next">Chegamos, próximo enigma</button></div>`}
+    </div></section>`;
+  }else if(cur>=0){
+    const e=E[cur];
+    html+=`<section class="card">${bar(`enigma_${cur+1}_de_${N}.txt`)}<div class="body">
+      <label>${e.lvl} · ENIGMA ${cur+1} DE ${N}</label><p class="story">${esc(e.name)}</p>
+      <p>Resolvam a pista em papel e digitem a resposta.</p>
+      <form id="f" class="row">${boxes(e.len,`aria-label="Resposta, ${e.len} letras"`)}<button>Verificar</button></form>
+      <div class="count">${e.len} letras</div><div class="msg" id="msg"></div>
+    </div></section>`;
+  }
+  if(dbReady&&!db&&!S.end)html+=`<p class="note">No auditório, a Guardiã registra o tempo de vocês ao abrir o cofre.</p>`;
   $("app").innerHTML=html;
-  document.querySelectorAll("form[data-i]").forEach(f=>{
-    const msg=f.querySelector(".msg")||f.parentElement.querySelector(".msg");
-    const ins=[...f.querySelectorAll("input")];
-    ins.forEach((inp,k)=>{inp.oninput=()=>{msg.textContent="";if(f.dataset.i==="final"&&inp.value.length>=inp.maxLength&&ins[k+1])ins[k+1].focus()}});
-    f.onsubmit=async ev=>{ev.preventDefault();
-      if(timeLeft()<=0){render();return}
-      if(f.dataset.i==="final"){
-        const w=norm(ins.map(x=>x.value).join(""));
-        if(!w){msg.className="msg no";msg.textContent="Preencham as palavras primeiro.";return}
-        if(await sha("ada:"+w)===FINAL){S.end=Date.now();save();push();render()}
-        else{msg.className="msg no";msg.textContent="O cofre continua trancado. Testem outra combinação."}
-        return;
-      }
-      const i=Number(f.dataset.i), w=norm(ins[0].value);
-      if(!w){msg.className="msg no";msg.textContent="Digitem a resposta primeiro.";return}
-      if(await sha("ada:"+w)===HASH[i]){const o=await dec(DATA[i],w);S.solved[i]=Date.now();S.info[i]={l:o.l,h:o.h,w};save();push();render()}
-      else{msg.className="msg no";msg.textContent="Ainda não. Revisem a pista e tentem de novo."}
-    };
-  });
+  if($("next"))$("next").onclick=()=>{S.showing=null;save();render()};
+  const f=$("f");
+  if(f){const inp=f.querySelector("input");inp.oninput=()=>{$("msg").textContent=""};
+    f.onsubmit=async ev=>{ev.preventDefault();if(timeLeft()<=0){render();return}
+      const w=norm(inp.value), m=$("msg");
+      if(!w){m.className="msg no";m.textContent="Digitem a resposta primeiro.";return}
+      if(await sha("ada:"+w)===STX[cur].h){const o=await dec(STX[cur].d,w);S.solved[cur]=Date.now();S.info[cur]={l:o.l,h:o.h,w};S.showing=cur;save();push();render()}
+      else{m.className="msg no";m.textContent="Ainda não. Revisem a pista e tentem de novo."}
+    };}
   foot(`<div>Organização: para zerar este celular, digite REINICIAR</div><div class="row"><input class="txt" id="resetIn" aria-label="Confirmação para reiniciar" placeholder="REINICIAR"><button class="ghost small" id="resetBtn">Zerar</button></div>`);
 }
 
 /* ---------- guardiã ---------- */
 document.addEventListener("click",e=>{
   const t=e.target;
-  if(t.id==="pinBtn"){if($("pin").value.trim()===PIN){S.mode="guard";save();subscribe();render()}else $("pinMsg").textContent="Senha incorreta."}
+  if(t.id==="pinBtn"){if($("pin").value.trim()===PIN){S.mode="guard";save();subscribeAll();render()}else $("pinMsg").textContent="Senha incorreta."}
   if(t.id==="leaveGuard"){S.mode="team";save();render()}
-  if(t.id==="resetBtn"){if(norm($("resetIn").value)==="REINICIAR"){const keepGuard=S.mode;S=blank();save();render()}else $("resetIn").focus()}
-  if(t.dataset&&t.dataset.del){if(t.dataset.armed){db&&db.collection("teams").doc(t.dataset.del).delete().catch(()=>{})}else{t.dataset.armed="1";t.textContent="Confirmar"}}
+  if(t.id==="resetBtn"){if(norm($("resetIn").value)==="REINICIAR"){if(unsubMe){unsubMe();unsubMe=null}S=blank();save();render()}else $("resetIn").focus()}
+  if(t.dataset&&t.dataset.del){if(t.dataset.armed){const id=t.dataset.del;if(id.startsWith("r:")){G.results=G.results.filter(r=>r.id!==id.slice(2));gsave();renderGuardBoard()}else db&&db.collection("teams").doc(id).delete().catch(()=>{})}else{t.dataset.armed="1";t.textContent="Confirmar"}}
 });
 const teamTime=t=>(t.end||Date.now())-t.start;
 function renderGuard(){
-  let html=`<section class="card">${bar("painel_da_guardia")}<div class="body">`;
-  if(!dbReady)html+=`<p>Conectando ao placar…</p>`;
-  else if(!db)html+=`<p>O placar ao vivo não está disponível neste aparelho. Abram o link entrando com uma conta Claude que tenha acesso a esta página.</p>`;
-  else{
-    const rows=teams.filter(t=>t.start).map(t=>{const n=(t.solved||[]).filter(Boolean).length,out=!t.end&&teamTime(t)>=LIMIT;return{...t,n,out,rank:t.end?0:out?2:1}})
-      .sort((a,b)=>a.rank-b.rank||(a.rank===0?(a.end-a.start)-(b.end-b.start):b.n-a.n||a.start-b.start));
-    const fin=rows.filter(r=>r.end).length, run=rows.filter(r=>!r.end&&!r.out).length;
-    html+=`<div class="kpis"><div class="kpi"><b>${rows.length}</b><span>EQUIPES</span></div><div class="kpi"><b>${run}</b><span>EM JOGO</span></div><div class="kpi"><b>${fin}</b><span>COFRE ABERTO</span></div></div>`;
-    if(!rows.length)html+=`<p class="note">Nenhuma equipe começou ainda. Quando uma equipe tocar em "Iniciar", ela aparece aqui.</p>`;
-    else html+=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>ACERTOS</th><th>TEMPO</th><th>RESTA</th><th>SITUAÇÃO</th><th></th></tr></thead><tbody>${rows.map((r,k)=>`<tr>
-      <td class="pos">${k+1}</td><td><b>${esc(r.name||"Sem nome")}</b></td>
-      <td><div class="pips">${Array.from({length:6},(_,j)=>`<span class="pip ${(r.solved||[])[j]?"on":""}"></span>`).join("")}<span class="pip vault ${r.end?"on":""}"></span></div><span class="count">${r.n}/6${r.end?" + cofre":""}</span></td>
-      <td data-tt="${r.id}">${fmt(Math.min(teamTime(r),LIMIT))}</td>
-      <td data-tl="${r.id}">${r.end?"—":fmt(LIMIT-teamTime(r))}</td>
-      <td>${r.end?`<span class="st win">Cofre aberto</span>`:r.out?`<span class="st out">Tempo esgotado</span>`:`<span class="st run">No enigma ${Math.min(r.n+1,6)}${r.n===6?" · cofre":""}</span>`}</td>
-      <td><button class="ghost small" data-del="${r.id}">Remover</button></td></tr>`).join("")}</tbody></table></div>
-      <p class="note">Ordem: primeiro quem abriu o cofre, pelo menor tempo; depois quem ainda joga, por número de acertos.</p>`;
-  }
-  html+=`</div></section>`;
-  $("app").innerHTML=html;
+  $("app").innerHTML=`<section class="card">${bar("cofre.lock")}<div class="body">
+      <label>O COFRE</label>
+      <p class="hint">Ada escreveu o primeiro programa da história para ela. O que era, e quem a inventou?</p>
+      <form id="vault" style="display:flex;flex-direction:column;gap:12px">
+        <div id="who"></div>
+        <div class="words">${FINAL_WORDS.map((n,k)=>boxes(n,`data-w="${k}" aria-label="Palavra ${k+1}, ${n} letras"`)).join("")}</div>
+        <div class="count">5 palavras · 7, 9, 2, 7 e 7 letras</div>
+        <div class="row"><button>Abrir o cofre</button></div>
+        <div class="msg" id="vmsg"></div>
+      </form></div></section>
+    <section class="card">${bar("placar")}<div class="body" id="board"></div></section>`;
+  renderWho(); renderGuardBoard();
+  const ins=[...document.querySelectorAll("#vault [data-w]")];
+  ins.forEach((inp,k)=>{inp.oninput=()=>{$("vmsg").textContent="";if(inp.value.length>=inp.maxLength&&ins[k+1])ins[k+1].focus()}});
+  $("vault").onsubmit=async ev=>{ev.preventDefault();const m=$("vmsg");m.className="msg no";
+    const w=norm(ins.map(x=>x.value).join(""));
+    const live=db&&teams.some(t=>t.start&&!t.end);
+    let team=null,name="",ms=null;
+    if(live){team=teams.find(t=>t.id===$("teamSel").value);if(!team){m.textContent="Escolham a equipe primeiro.";return}}
+    else{name=$("vName").value.trim();ms=parseTime($("vTime").value);if(!name){m.textContent="Digite o nome da equipe.";return}if(ms===null){m.textContent="Digite o tempo do celular no formato 12:34.";return}}
+    if(!w){m.textContent="Preencham as palavras primeiro.";return}
+    if(await sha("ada:"+w)!==FINAL){m.textContent="O cofre continua trancado. Testem outra combinação.";return}
+    if(team){const end=Date.now();await db.collection("teams").doc(team.id).update({end}).catch(()=>{});m.className="msg";m.textContent=`Cofre aberto! ${team.name}: ${fmt(end-team.start)}.`}
+    else{const used=LIMIT-ms;G.results.push({id:Date.now().toString(36),name,time:Math.max(0,used)});gsave();m.className="msg";m.textContent=`Cofre aberto! ${name}: ${fmt(Math.max(0,used))}.`;renderGuardBoard()}
+    ins.forEach(x=>x.value="");renderWho();
+  };
   foot(`<button class="ghost small" id="leaveGuard">Sair do painel</button>`);
 }
+function renderWho(){
+  const who=$("who");if(!who)return;
+  const open=db?teams.filter(t=>t.start&&!t.end):[];
+  if(open.length){who.innerHTML=`<label for="teamSel">EQUIPE</label><select id="teamSel" class="txt">${open.map(t=>`<option value="${t.id}">${esc(t.name)} · ${(t.solved||[]).filter(Boolean).length}/6</option>`).join("")}</select>`}
+  else{who.innerHTML=`<div class="row"><div style="flex:1 1 180px;display:flex;flex-direction:column;gap:6px"><label for="vName">EQUIPE</label><input class="txt" id="vName" maxlength="24" placeholder="Nome da equipe"></div><div style="flex:0 1 150px;display:flex;flex-direction:column;gap:6px"><label for="vTime">RESTA NO CELULAR</label><input class="txt" id="vTime" inputmode="numeric" placeholder="12:34"></div></div>`}
+}
+function renderGuardBoard(){
+  const b=$("board");if(!b)return;
+  const wantSel=!!(db&&teams.some(t=>t.start&&!t.end)), sel=$("teamSel");
+  if(wantSel!==!!sel)renderWho();
+  else if(sel){const v=sel.value;renderWho();const s2=$("teamSel");if(s2&&[...s2.options].some(o=>o.value===v))s2.value=v}
+  let rows;
+  if(db&&teams.length){
+    rows=teams.filter(t=>t.start).map(t=>{const n=(t.solved||[]).filter(Boolean).length,out=!t.end&&teamTime(t)>=LIMIT;return{id:t.id,name:t.name,n,end:!!t.end,out,time:t.end?t.end-t.start:null,t}});
+  }else{
+    rows=G.results.map(r=>({id:"r:"+r.id,name:r.name,n:6,end:true,out:false,time:r.time}));
+  }
+  rows.sort((a,b)=>(a.end?0:a.out?2:1)-(b.end?0:b.out?2:1)||(a.end?a.time-b.time:b.n-a.n));
+  const fin=rows.filter(r=>r.end).length, run=rows.filter(r=>!r.end&&!r.out).length;
+  let html=`<div class="kpis"><div class="kpi"><b>${rows.length}</b><span>EQUIPES</span></div><div class="kpi"><b>${run}</b><span>EM JOGO</span></div><div class="kpi"><b>${fin}</b><span>COFRE ABERTO</span></div></div>`;
+  if(!rows.length)html+=`<p class="note">${db?'Nenhuma equipe começou ainda. Quando uma equipe tocar em "Iniciar", ela aparece aqui.':"Os resultados aparecem aqui conforme as equipes abrem o cofre."}</p>`;
+  else html+=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>ACERTOS</th><th>TEMPO</th><th>SITUAÇÃO</th><th></th></tr></thead><tbody>${rows.map((r,k)=>`<tr>
+    <td class="pos">${k+1}</td><td><b>${esc(r.name||"Sem nome")}</b></td>
+    <td><div class="pips">${Array.from({length:6},(_,j)=>`<span class="pip ${j<r.n?"on":""}"></span>`).join("")}<span class="pip vault ${r.end?"on":""}"></span></div><span class="count">${r.n}/6${r.end?" + cofre":""}</span></td>
+    <td ${r.t&&!r.end?`data-tt="${r.id}"`:""}>${r.end?fmt(r.time):fmt(Math.min(teamTime(r.t),LIMIT))}</td>
+    <td>${r.end?`<span class="st win">Cofre aberto</span>`:r.out?`<span class="st out">Tempo esgotado</span>`:`<span class="st run">${r.n===6?"Indo ao cofre":"No enigma "+(r.n+1)}</span>`}</td>
+    <td><button class="ghost small" data-del="${r.id}">Remover</button></td></tr>`).join("")}</tbody></table></div>
+    <p class="note">Ordem: primeiro quem abriu o cofre, pelo menor tempo; depois quem ainda joga, por número de acertos.</p>`;
+  b.innerHTML=html;
+}
 
-/* ---------- clocks: display only, never writes ---------- */
+/* ---------- clocks: display only ---------- */
 setInterval(()=>{
-  if(S.mode==="guard"){teams.forEach(t=>{if(!t.start)return;const a=document.querySelector(`[data-tt="${t.id}"]`),b=document.querySelector(`[data-tl="${t.id}"]`);if(a)a.textContent=fmt(Math.min(teamTime(t),LIMIT));if(b&&!t.end)b.textContent=fmt(LIMIT-teamTime(t))});return}
+  if(S.mode==="guard"){teams.forEach(t=>{const a=document.querySelector(`[data-tt="${t.id}"]`);if(a&&t.start)a.textContent=fmt(Math.min(teamTime(t),LIMIT))});return}
   if(!S.start||S.end)return;
   const c=$("clock");if(!c)return;const tl=timeLeft();c.textContent=fmt(tl);c.classList.toggle("low",tl<5*60*1000);
-  if(tl<=0&&document.querySelector("form[data-i]"))render();
+  if(tl<=0&&$("f"))render();
 },500);
 render();
 </script>
