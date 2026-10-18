@@ -1,0 +1,253 @@
+<title>O Código Perdido de Ada</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap">
+<style>
+/* Layout: one narrow "document" column on lilac paper. Team view = timer bar, syllable strip, six enigma cards + the vault. Guardiã view = live scoreboard. Single deliberate look matching the ProgramADA print pieces. */
+:root{
+  --paper:#DCD0E2; --sheet:#EFE7F3; --white:#FFFFFF; --ink:#2B1452; --plum:#3D1A6E; --violet:#5A2A9C; --muted:#7D6A9C; --ember:#E2572B; --ok:#2F7A4F; --okbg:#E3F1E8; --line:#B9A3DE; --lock:#CDBBDD;
+  --mono:"Space Mono",ui-monospace,Menlo,Consolas,monospace;
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--mono);margin:0;min-height:100vh;background-image:radial-gradient(#5A2A9C0f 1px,transparent 1.2px);background-size:22px 22px}
+.wrap{max-width:600px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header{text-align:center;display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:12px;letter-spacing:.3em;color:var(--violet);font-weight:700}
+h1{font-weight:700;font-size:clamp(22px,6vw,30px);line-height:1.15;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--ember)}
+.story{font-family:var(--serif);font-size:20px;line-height:1.45;font-style:italic;color:var(--plum);margin:0}
+p{margin:0;line-height:1.6;font-size:15px}
+label{font-size:12px;letter-spacing:.18em;font-weight:700;color:var(--violet)}
+.card{background:var(--sheet);border:2px solid var(--plum);border-radius:10px;box-shadow:6px 6px 0 var(--plum);overflow:hidden}
+.bar{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:2px solid var(--plum);background:#CDBBDD;font-size:13px;color:var(--plum)}
+.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--plum);flex:none}
+.bar .t{margin-left:6px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.body{padding:18px 16px 20px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input.txt{flex:1 1 200px;min-width:0;font:700 18px var(--mono);padding:12px 14px;border:2px solid var(--plum);border-radius:8px;background:var(--white);color:var(--ink)}
+button{font:700 15px var(--mono);letter-spacing:.06em;padding:12px 18px;border-radius:8px;border:2px solid var(--plum);background:var(--plum);color:#fff;cursor:pointer}
+button:hover{background:var(--violet)}
+button.ghost{background:transparent;color:var(--plum)}
+button.small{font-size:12px;padding:7px 10px}
+button:focus-visible,input:focus-visible{outline:3px solid var(--ember);outline-offset:2px}
+.msg{font-size:14px;min-height:1.3em}
+.msg.no{color:var(--ember)}
+.status{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;background:var(--plum);color:#fff;border-radius:10px;padding:10px 14px;box-shadow:0 4px 0 #2B145233}
+.status .team{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status .clock{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:#FFD9C9}
+.status .clock.low{color:#FF9B7A}
+.status .left{font-size:12px;text-align:right;line-height:1.3;color:#E7DCF5}
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.slot{min-height:46px;padding:6px;text-align:center;border:2px solid var(--plum);border-radius:6px;background:var(--sheet);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--line);letter-spacing:.04em}
+.slot.got{color:var(--ink);background:var(--white);box-shadow:3px 3px 0 var(--plum)}
+.enig{border:2px solid var(--plum);border-radius:10px;background:var(--sheet);padding:14px;display:flex;flex-direction:column;gap:10px}
+.enig.locked{border-style:dashed;border-color:var(--line);background:transparent;color:var(--muted)}
+.enig.done{background:var(--white)}
+.enig .head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.enig .name{font-weight:700;font-size:16px}
+.enig .lvl{font-size:11px;letter-spacing:.14em;color:var(--violet)}
+.enig.locked .lvl{color:var(--line)}
+.badge{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--okbg);color:var(--ok)}
+.next{border-left:4px solid var(--ember);padding:4px 0 4px 12px;display:flex;flex-direction:column;gap:4px}
+.next .story{font-size:18px}
+.boxes{--n:6;--cw:1.7ch;font:700 22px var(--mono);width:calc(var(--n) * var(--cw) - 4px);max-width:100%;padding:8px 0 8px calc((var(--cw) - 1ch) / 2);letter-spacing:calc(var(--cw) - 1ch);border:0;border-radius:0;text-transform:uppercase;color:var(--ink);
+  background:repeating-linear-gradient(90deg,var(--white) 0 calc(var(--cw) - 4px),transparent calc(var(--cw) - 4px) var(--cw));box-shadow:inset 0 -3px 0 var(--plum)}
+.boxes:disabled{background:repeating-linear-gradient(90deg,var(--lock) 0 calc(var(--cw) - 4px),transparent calc(var(--cw) - 4px) var(--cw));box-shadow:none;color:var(--muted)}
+.words{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.count{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.hint{font-family:var(--serif);font-size:21px;line-height:1.35;color:var(--plum);text-align:center;margin:0}
+.big{font-size:40px;font-weight:700;color:var(--ember);font-variant-numeric:tabular-nums;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11px;letter-spacing:.14em;text-align:left;color:var(--violet);padding:8px 6px;border-bottom:2px solid var(--plum);white-space:nowrap}
+td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+td.pos{font-weight:700;color:var(--ember);width:28px}
+.pips{display:flex;gap:3px}
+.pip{width:12px;height:12px;border-radius:3px;border:1.5px solid var(--plum)}
+.pip.on{background:var(--violet)}
+.pip.vault{border-radius:50%}
+.pip.vault.on{background:var(--ember);border-color:var(--ember)}
+.st{font-size:11px;font-weight:700;padding:3px 7px;border-radius:999px;white-space:nowrap}
+.st.run{background:#E7DCF5;color:var(--violet)}
+.st.win{background:var(--okbg);color:var(--ok)}
+.st.out{background:#FBE3DA;color:#A23A16}
+.tablewrap{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kpi{background:var(--white);border:2px solid var(--plum);border-radius:8px;padding:10px;text-align:center}
+.kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:11px;letter-spacing:.1em;color:var(--muted)}
+footer{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-align:center}
+footer .row{justify-content:center}
+footer input.txt{flex:0 1 170px;font-size:13px;padding:8px 10px}
+.note{font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:no-preference){.slot.got{animation:pop .45s ease}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.08)}100%{transform:scale(1)}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">PROGRAMADA 2026 ✦ DINÂMICA</div>
+    <h1>O Código Perdido <em>de Ada</em></h1>
+  </header>
+  <main id="app" style="display:flex;flex-direction:column;gap:18px"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const HASH=["c659af25f9b8ff6b3e25b6ba1074af19b7030e4e18a8668e70be9b8c7457b81d", "c189f13e88aed7619f362ec6e7c304150ae7bcaa427560ebadbd33be380e5ec8", "43387906e5e5c54580506f8e0bed381e61a36bc9dccd84b7c41ab46c4afffa07", "9dd2e164372e9cbab6adf6d27561a57a00af74d92a0e558c0cb60580d4013103", "b6b08b74b8e65297987f1e6fff937240c206da411125856cad2af7e7cfed72e9", "8d01fd6313c9521d7c3b85d2c44b0658a586c7f8fee4d3a565dd7c02ffb3a1a5"];
+const DATA=["p0OwareNdQ/6zN09iitOJ4qgJxoU5fxhKaKssuyf5DSzQblo/sg6Y83wjotSJyOJYuxjWxb7sSEp45ey5t6iMbMPuy2jjRYty/qO31luI5Ji8GpIFv2xP2rhjKOtn+co/Asf6a3IJSKf8JObXHgtxnY=", "iCMU7/I0IAOEMKE0FRCetJdejCnMAUmH5Qcy48Mww4SCdBHtq3VmLOVlDqNBN7LW2LxIbO1oG9mqTz+1ljzBqJJyWKOhemU4BrkOo0EgvpTW8FNouDsE0axLMq7XMpw=", "5pNFwoB1K65WfdQUuLH9PRdh7j0J47dOb62/eDQgnsD4kUOV1CFoynJ9YmAxg8YdVizufg7h/gEvkr9jeyOUjfnUWpTbdWqLYDw4geU=", "dPKQtTfX494qAdt5MdmaptjejYfHFaicQ0qrBp7mPRF7v9z4Y5OkuQ4BcKB398rnmT9CZl5aqrxJH+4H3fk8C32x0rdImuHwAUZ1DbvrlKqVmcXGlVTnrkEf7wye9TcRe6KTuS+K", "A8hsOHXwyQ9wDcPYjipFvm+iHFkmzrQBQ2mHkH+YVL8XymZvO6WZIxg49JVs/hCA3uyTFnOAsxlZLNar0l1W9heZLDo5sYwtS2z02DzvpkHURlMadcysQgo6yqw/3kw=", "DpcxYqJVSGGb6AiqkEYl0QPCHoH9fIOCC8xvlWbyTmoWdvczuAGpiLfovnLUaRfRoAYesH/zw8NLxT6OZoZ3aQHQMGD5GkpDr6yjaXO7FpiuTx6inBnaw1vAJGzl8Gh3GsE4J/1VBQK5p6xv1SZGjA=="];
+const FINAL="0716b17646ca7d32dcbf3decb71b6a3fcef0fa37af22abcf0893b3aaf879dc28";
+const E=[
+ {name:"A carta de dupla leitura",lvl:"NÍVEL 1 · ADA",len:6},
+ {name:"A transmissão",lvl:"NÍVEL 1 · ADA",len:5},
+ {name:"A frase do coworking",lvl:"NÍVEL 2 · COMPUTAÇÃO",len:5},
+ {name:"Pontos e traços",lvl:"NÍVEL 2 · COMPUTAÇÃO",len:6},
+ {name:"Quem sou eu?",lvl:"NÍVEL 3 · MULHERES",len:5},
+ {name:"A mensagem das pioneiras",lvl:"NÍVEL 3 · MULHERES",len:9}
+];
+const FINAL_WORDS=[7,9,2,7,7];
+const N=6, LIMIT=40*60*1000, PIN="1815", KEY="codigo-de-ada-v4";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+async function sha(t){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function dec(d,w){const k=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode("loc:"+w)));const r=Uint8Array.from(atob(d),c=>c.charCodeAt(0)).map((b,i)=>b^k[i%32]);return JSON.parse(new TextDecoder().decode(r))}
+const fmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+
+/* ---------- this phone's state ---------- */
+const blank=()=>({mode:"team",id:null,name:"",start:null,solved:Array(N).fill(null),info:Array(N).fill(null),end:null});
+let S=blank();
+try{const x=JSON.parse(localStorage.getItem(KEY)||"null");if(x)S=Object.assign(blank(),x)}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+/* ---------- shared scoreboard (db, optional) ---------- */
+let db=null, dbReady=false, teams=[], unsub=null, writing=Promise.resolve();
+(async()=>{try{db=await window.claude?.use?.("db")}catch(e){db=null}dbReady=true;if(S.mode==="guard")subscribe();if(S.id)push();render()})();
+function push(){
+  if(!db||!S.id)return;
+  const body={name:S.name,start:S.start,solved:S.solved,end:S.end,count:S.solved.filter(Boolean).length};
+  writing=writing.then(()=>db.collection("teams").doc(S.id).set(body)).catch(()=>{});
+}
+function subscribe(){
+  if(!db||unsub)return;
+  unsub=db.collection("teams").onSnapshot(snap=>{teams=snap.docs.map(d=>({id:d.id,...d.data()}));render()},()=>{unsub=null});
+}
+
+function render(){
+  if(S.mode==="guard")return renderGuard();
+  if(!S.start)return renderStart();
+  renderGame();
+}
+const foot=h=>{$("foot").innerHTML=h};
+const bar=t=>`<div class="bar"><span class="dot" style="background:var(--ember)"></span><span class="dot" style="background:var(--line)"></span><span class="dot" style="background:var(--violet)"></span><span class="t">${t}</span></div>`;
+
+function renderStart(){
+  $("app").innerHTML=`<section class="card">${bar("notas_de_ada.txt")}<div class="body">
+    <p class="story">Em 1843, Ada Lovelace escreveu o primeiro programa da história. Antes de partir, ela escondeu suas notas e espalhou pistas pelo prédio.</p>
+    <p>São 6 enigmas em 3 níveis. Cada resposta certa libera sílabas da resposta final e uma charada que leva à próxima sala. Vocês têm <b>40 minutos</b>.</p>
+    <form id="f" style="display:flex;flex-direction:column;gap:10px">
+      <label for="team">NOME DA EQUIPE</label>
+      <input class="txt" id="team" maxlength="24" autocomplete="off" placeholder="Ex.: As Analíticas">
+      <div class="msg" id="msg"></div>
+      <div class="row"><button>Iniciar</button></div>
+    </form></div></section>`;
+  $("f").onsubmit=e=>{e.preventDefault();const n=$("team").value.trim();if(!n){$("msg").className="msg no";$("msg").textContent="Digitem o nome da equipe primeiro.";return}
+    S.name=n;S.start=Date.now();S.id=("t"+Date.now().toString(36)+Math.random().toString(36).slice(2,8));save();push();render()};
+  $("team").oninput=()=>{$("msg").textContent=""};
+  foot(`<div class="row"><input class="txt" id="pin" inputmode="numeric" aria-label="Senha da Guardiã" placeholder="Senha da Guardiã"><button class="ghost small" id="pinBtn">Painel da Guardiã</button></div><div class="msg no" id="pinMsg"></div>`);
+}
+
+const current=()=>S.solved.findIndex(x=>!x);
+const timeLeft=()=>LIMIT-((S.end||Date.now())-S.start);
+
+function renderGame(){
+  const cur=current(), done=cur===-1, out=!S.end&&timeLeft()<=0;
+  const left=S.end?0:S.solved.filter(x=>!x).length+1;
+  let html=`<div class="status"><div class="team">${esc(S.name)}</div><div class="clock" id="clock">${fmt(timeLeft())}</div><div class="left">${S.end?"Cofre<br>aberto":`Faltam<br>${left} de 7`}</div></div>
+  <div class="slots" aria-label="Sílabas conquistadas">${S.info.map(i=>`<div class="slot ${i?"got":""}">${i?esc(i.l):"?"}</div>`).join("")}</div>`;
+  if(S.end)html+=`<section class="card"><div class="body" style="text-align:center"><label>COFRE ABERTO</label><p class="story">A Máquina Analítica de Charles Babbage nunca chegou a ser construída, mas Ada escreveu para ela o primeiro programa da história.</p><div class="big">${fmt(S.end-S.start)}</div><p>Mostrem esta tela para a Guardiã.</p></div></section>`;
+  else if(out)html+=`<section class="card"><div class="body" style="text-align:center"><label>TEMPO ESGOTADO</label><p class="story">As notas de Ada continuam escondidas.</p><p>Voltem ao auditório e mostrem esta tela para a Guardiã: vocês resolveram ${S.solved.filter(Boolean).length} de 6 enigmas.</p></div></section>`;
+  E.forEach((e,i)=>{
+    const st=S.solved[i]?"done":(i===cur&&!out?"open":"locked");
+    html+=`<section class="enig ${st==="locked"?"locked":st==="done"?"done":""}"><div class="head"><span class="name">${i+1}. ${st==="locked"?"🔒 ":""}${esc(e.name)}</span>${st==="done"?`<span class="badge">✓ resolvido</span>`:`<span class="lvl">${e.lvl}</span>`}</div>`;
+    if(st==="open")html+=`<form class="row" data-i="${i}"><input class="boxes" style="--n:${e.len}" maxlength="${e.len}" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Resposta do enigma ${i+1}, ${e.len} letras"><button>Verificar</button></form><div class="count">${e.len} letras</div><div class="msg"></div>`;
+    else if(st==="locked")html+=`<input class="boxes" style="--n:${e.len}" disabled aria-label="Enigma bloqueado"><div class="count">${e.len} letras</div>`;
+    else if(S.info[i]){
+      const last=(cur===-1?N-1:cur-1)===i&&!S.end;
+      html+=`<div class="count">Resposta: ${esc(S.info[i].w)} · sílabas ${esc(S.info[i].l)}</div>${last?`<div class="next"><label>PRÓXIMA PISTA</label><p class="story">${esc(S.info[i].h)}</p></div>`:""}`;
+    }
+    html+=`</section>`;
+  });
+  const vOpen=done&&!S.end&&!out;
+  html+=`<section class="enig ${S.end?"done":vOpen?"":"locked"}"><div class="head"><span class="name">${vOpen||S.end?"":"🔒 "}O cofre</span>${S.end?`<span class="badge">✓ aberto</span>`:`<span class="lvl">FINAL · AUDITÓRIO</span>`}</div>`;
+  if(vOpen)html+=`<p class="hint">Ada escreveu o primeiro programa da história para ela. O que era, e quem a inventou?</p>
+    <form data-i="final" style="display:flex;flex-direction:column;gap:10px"><div class="words">${FINAL_WORDS.map((n,k)=>`<input class="boxes" style="--n:${n}" maxlength="${n}" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Palavra ${k+1}, ${n} letras">`).join("")}</div>
+    <div class="count">5 palavras · 7, 9, 2, 7 e 7 letras</div><div class="row"><button>Abrir o cofre</button></div><div class="msg"></div></form>`;
+  else if(!S.end)html+=`<div class="words">${FINAL_WORDS.map(n=>`<input class="boxes" style="--n:${n}" disabled aria-label="Bloqueado">`).join("")}</div><div class="count">5 palavras</div>`;
+  html+=`</section>`;
+  if(dbReady&&!db)html+=`<p class="note">Este celular não está no placar ao vivo. O jogo funciona normalmente: mostrem o tempo final à Guardiã.</p>`;
+  $("app").innerHTML=html;
+  document.querySelectorAll("form[data-i]").forEach(f=>{
+    const msg=f.querySelector(".msg")||f.parentElement.querySelector(".msg");
+    const ins=[...f.querySelectorAll("input")];
+    ins.forEach((inp,k)=>{inp.oninput=()=>{msg.textContent="";if(f.dataset.i==="final"&&inp.value.length>=inp.maxLength&&ins[k+1])ins[k+1].focus()}});
+    f.onsubmit=async ev=>{ev.preventDefault();
+      if(timeLeft()<=0){render();return}
+      if(f.dataset.i==="final"){
+        const w=norm(ins.map(x=>x.value).join(""));
+        if(!w){msg.className="msg no";msg.textContent="Preencham as palavras primeiro.";return}
+        if(await sha("ada:"+w)===FINAL){S.end=Date.now();save();push();render()}
+        else{msg.className="msg no";msg.textContent="O cofre continua trancado. Testem outra combinação."}
+        return;
+      }
+      const i=Number(f.dataset.i), w=norm(ins[0].value);
+      if(!w){msg.className="msg no";msg.textContent="Digitem a resposta primeiro.";return}
+      if(await sha("ada:"+w)===HASH[i]){const o=await dec(DATA[i],w);S.solved[i]=Date.now();S.info[i]={l:o.l,h:o.h,w};save();push();render()}
+      else{msg.className="msg no";msg.textContent="Ainda não. Revisem a pista e tentem de novo."}
+    };
+  });
+  foot(`<div>Organização: para zerar este celular, digite REINICIAR</div><div class="row"><input class="txt" id="resetIn" aria-label="Confirmação para reiniciar" placeholder="REINICIAR"><button class="ghost small" id="resetBtn">Zerar</button></div>`);
+}
+
+/* ---------- guardiã ---------- */
+document.addEventListener("click",e=>{
+  const t=e.target;
+  if(t.id==="pinBtn"){if($("pin").value.trim()===PIN){S.mode="guard";save();subscribe();render()}else $("pinMsg").textContent="Senha incorreta."}
+  if(t.id==="leaveGuard"){S.mode="team";save();render()}
+  if(t.id==="resetBtn"){if(norm($("resetIn").value)==="REINICIAR"){const keepGuard=S.mode;S=blank();save();render()}else $("resetIn").focus()}
+  if(t.dataset&&t.dataset.del){if(t.dataset.armed){db&&db.collection("teams").doc(t.dataset.del).delete().catch(()=>{})}else{t.dataset.armed="1";t.textContent="Confirmar"}}
+});
+const teamTime=t=>(t.end||Date.now())-t.start;
+function renderGuard(){
+  let html=`<section class="card">${bar("painel_da_guardia")}<div class="body">`;
+  if(!dbReady)html+=`<p>Conectando ao placar…</p>`;
+  else if(!db)html+=`<p>O placar ao vivo não está disponível neste aparelho. Abram o link entrando com uma conta Claude que tenha acesso a esta página.</p>`;
+  else{
+    const rows=teams.filter(t=>t.start).map(t=>{const n=(t.solved||[]).filter(Boolean).length,out=!t.end&&teamTime(t)>=LIMIT;return{...t,n,out,rank:t.end?0:out?2:1}})
+      .sort((a,b)=>a.rank-b.rank||(a.rank===0?(a.end-a.start)-(b.end-b.start):b.n-a.n||a.start-b.start));
+    const fin=rows.filter(r=>r.end).length, run=rows.filter(r=>!r.end&&!r.out).length;
+    html+=`<div class="kpis"><div class="kpi"><b>${rows.length}</b><span>EQUIPES</span></div><div class="kpi"><b>${run}</b><span>EM JOGO</span></div><div class="kpi"><b>${fin}</b><span>COFRE ABERTO</span></div></div>`;
+    if(!rows.length)html+=`<p class="note">Nenhuma equipe começou ainda. Quando uma equipe tocar em "Iniciar", ela aparece aqui.</p>`;
+    else html+=`<div class="tablewrap"><table><thead><tr><th>#</th><th>EQUIPE</th><th>ACERTOS</th><th>TEMPO</th><th>RESTA</th><th>SITUAÇÃO</th><th></th></tr></thead><tbody>${rows.map((r,k)=>`<tr>
+      <td class="pos">${k+1}</td><td><b>${esc(r.name||"Sem nome")}</b></td>
+      <td><div class="pips">${Array.from({length:6},(_,j)=>`<span class="pip ${(r.solved||[])[j]?"on":""}"></span>`).join("")}<span class="pip vault ${r.end?"on":""}"></span></div><span class="count">${r.n}/6${r.end?" + cofre":""}</span></td>
+      <td data-tt="${r.id}">${fmt(Math.min(teamTime(r),LIMIT))}</td>
+      <td data-tl="${r.id}">${r.end?"—":fmt(LIMIT-teamTime(r))}</td>
+      <td>${r.end?`<span class="st win">Cofre aberto</span>`:r.out?`<span class="st out">Tempo esgotado</span>`:`<span class="st run">No enigma ${Math.min(r.n+1,6)}${r.n===6?" · cofre":""}</span>`}</td>
+      <td><button class="ghost small" data-del="${r.id}">Remover</button></td></tr>`).join("")}</tbody></table></div>
+      <p class="note">Ordem: primeiro quem abriu o cofre, pelo menor tempo; depois quem ainda joga, por número de acertos.</p>`;
+  }
+  html+=`</div></section>`;
+  $("app").innerHTML=html;
+  foot(`<button class="ghost small" id="leaveGuard">Sair do painel</button>`);
+}
+
+/* ---------- clocks: display only, never writes ---------- */
+setInterval(()=>{
+  if(S.mode==="guard"){teams.forEach(t=>{if(!t.start)return;const a=document.querySelector(`[data-tt="${t.id}"]`),b=document.querySelector(`[data-tl="${t.id}"]`);if(a)a.textContent=fmt(Math.min(teamTime(t),LIMIT));if(b&&!t.end)b.textContent=fmt(LIMIT-teamTime(t))});return}
+  if(!S.start||S.end)return;
+  const c=$("clock");if(!c)return;const tl=timeLeft();c.textContent=fmt(tl);c.classList.toggle("low",tl<5*60*1000);
+  if(tl<=0&&document.querySelector("form[data-i]"))render();
+},500);
+render();
+</script>
