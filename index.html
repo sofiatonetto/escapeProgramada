@@ -126,6 +126,12 @@ const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 /* ---------- this phone ---------- */
 const blank=()=>({mode:"team",id:null,name:"",start:null,solved:Array(N).fill(null),info:Array(N).fill(null),showing:null,end:null});
 let S=load(KEY,blank());
+{const q=new URLSearchParams(location.search);
+ if(q.has("novo")||(S.start&&Date.now()-S.start>LIMIT+30*60*1000)){const m=S.mode;S=blank();if(m==="guard")S.mode=m}
+ if(S.mode==="guard"&&location.hash!=="#guardia")S.mode="team";
+ if(S.mode!=="guard"&&location.hash==="#guardia")history.replaceState(null,"",location.pathname+location.search);
+ if(q.has("novo"))history.replaceState(null,"",location.pathname+location.hash);
+ try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const save=()=>store(KEY,S);
 /* ---------- guardiã device (offline results) ---------- */
 let G=load(GKEY,{results:[]});
@@ -213,8 +219,8 @@ function renderGame(){
 /* ---------- guardiã ---------- */
 document.addEventListener("click",e=>{
   const t=e.target;
-  if(t.id==="pinBtn"){if($("pin").value.trim()===PIN){S.mode="guard";save();subscribeAll();render()}else $("pinMsg").textContent="Senha incorreta."}
-  if(t.id==="leaveGuard"){S.mode="team";save();render()}
+  if(t.id==="pinBtn"){if($("pin").value.trim()===PIN){S.mode="guard";history.replaceState(null,"","#guardia");save();subscribeAll();render()}else $("pinMsg").textContent="Senha incorreta."}
+  if(t.id==="leaveGuard"){S.mode="team";history.replaceState(null,"",location.pathname+location.search);save();render()}
   if(t.id==="resetBtn"){if(norm($("resetIn").value)==="REINICIAR"){if(unsubMe){unsubMe();unsubMe=null}S=blank();save();render()}else $("resetIn").focus()}
   if(t.dataset&&t.dataset.del){if(t.dataset.armed){const id=t.dataset.del;if(id.startsWith("r:")){G.results=G.results.filter(r=>r.id!==id.slice(2));gsave();renderGuardBoard()}else db&&db.collection("teams").doc(id).delete().catch(()=>{})}else{t.dataset.armed="1";t.textContent="Confirmar"}}
 });
