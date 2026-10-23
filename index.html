@@ -101,7 +101,7 @@ select.txt{appearance:auto}
 
 <script>
 const STX=[{"h": "c659af25f9b8ff6b3e25b6ba1074af19b7030e4e18a8668e70be9b8c7457b81d", "d": "p0OwareNDBiOr83THSlOJ4qgVhYW1u9rOKzf9dDqy3+BPKE="}, {"h": "c189f13e88aed7619f362ec6e7c304150ae7bcaa427560ebadbd33be380e5ec8", "d": "iCMU7/I0WRbyPEOhdHCC2pfHAyW4aifulgcHnIQ="}, {"h": "43387906e5e5c54580506f8e0bed381e61a36bc9dccd84b7c41ab46c4afffa07", "d": "5pNFwoB1UrEibDqDuq7pVmhh7kRQ86FOb6efL0kTjA=="}, {"h": "9dd2e164372e9cbab6adf6d27561a57a00af74d92a0e558c0cb60580d4013103", "d": "dPKQtTfXmsJWDTnsU9n6qKXQxf7MBabvDn3KS+PLLw=="}, {"h": "f9e6150e4afafd87027163cddf07045cf45240cd485c777d59ccf1f89a3c1391", "d": "+TYgLIMOTId3b6cV1zI1TDsUsdzLZfaaknP9Ge6SMw=="}, {"h": "b6b08b74b8e65297987f1e6fff937240c206da411125856cad2af7e7cfed72e9", "d": "A8hsOHXwsBcPYLHaDb843ox0BlkmzpBmKmv4gmw="}, {"h": "8d01fd6313c9521d7c3b85d2c44b0658a586c7f8fee4d3a565dd7c02ffb3a1a5", "d": "DpcxYqJVMXnr+eY9kkYl05xZHpiNbIOCC+MIjRuNZQ=="}, {"h": "51bbac8003148795aff3d74a34a4057f6f0f21fcdc4d6092939ef16274fd4852", "d": "ITb24Ttj69IKky0VEQCw/1g8awnH3AOmQLXaYY5GmOd6NtmLQBGS1GPC"}, {"h": "a1b4a8b1cab20c08f9455b11e102ad9d3e154c865ee664c06be2136ded7b551d", "d": "5szfFRdI2WiGJ1aKEbnKw34/UAf1Nz96OyLRijlIyJexzpFjZErfbso="}, {"h": "f4ba2a99b54f745d2a8ee885fa2e4ea2676fbaf1ffd8f24e8249262a774cc808", "d": "NtBbPhKOq4d+gYvhA/0C7V3cur99a0x982grvKXbd5dh0hVIYYytgTI="}, {"h": "e25ddd400c542da313b8887ccc50379170a8f66454adfe33af38aa529f33c586", "d": "Vowy3iiMtwiK7xWyAVE1Uoh6H/MLbt7JhVqtWipHEmwNjB20U/7ODuO+"}];
-const TO=["", "Sem fio e sem rosto, minha voz chega longe. Antes de virar podcast, eu já era ondas.", "Aqui cada um tem o seu projeto, mas ninguém trabalha sozinho.", "Meu nome junta a técnica ao sobrenome desta casa.", "Onde projetos ganham vida. Em inglês, me chamam de centro.", "Pequena demais para um evento, grande o bastante para uma boa ideia: poucas cadeiras, uma mesa e muitas decisões.", "Onde ocorrem mentorias e foil studies.", "Sem mim, nenhum código roda. Sigam o cheiro.", "Aqui ninguém tem pressa: é onde a turma se encontra entre uma aula e outra.", "Quem chega ao prédio me vê primeiro; quem espera, senta em mim.", "Saiam um pouco do prédio: do lado de fora, Ada deixou algumas luzes acesas."];
+const TO=["", "Sem fio e sem rosto, minha voz chega longe. Antes de virar podcast, eu já era ondas.", "Aqui cada um tem o seu projeto, mas ninguém trabalha sozinho.", "Meu nome junta a técnica ao sobrenome desta casa.", "Onde projetos ganham vida. Em inglês, me chamam de centro.", "Três mesas redondas, um sofá e uma vista: daqui de cima, dá para admirar o primeiro andar inteiro.", "Pequena demais para um evento, grande o bastante para uma boa ideia: poucas cadeiras, uma mesa e muitas decisões.", "Sem mim, nenhum código roda. Sigam o cheiro.", "Aqui ninguém tem pressa: é onde a turma se encontra entre uma aula e outra.", "Quem chega ao prédio me vê primeiro; quem espera, senta em mim.", "Saiam um pouco do prédio: do lado de fora, Ada deixou algumas luzes acesas."];
 const FINAL="0716b17646ca7d32dcbf3decb71b6a3fcef0fa37af22abcf0893b3aaf879dc28";
 const E=[
  {len:6},
@@ -160,8 +160,19 @@ const boxes=(n,attrs="")=>`<input class="boxes" style="--n:${n}" maxlength="${n}
 function render(){
   if(S.mode==="guard")return renderGuard();
   if(location.hash==="#guardia")return renderPin();
-  if(!S.start){S.start=Date.now();S.path=makePath();S.showing=null;S.id="t"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);save();push();watchMe()}
+  if(!S.start)return renderIntro();
   renderGame();
+}
+function renderIntro(){
+  $("app").innerHTML=`<section class="card">${bar("")}<div class="body">
+    <p class="story">Em 1843, Ada Lovelace escreveu o primeiro programa da história. Agora as notas dela estão escondidas pela faculdade.</p>
+    <p>São <b>6 enigmas</b>: o primeiro é a carta de Ada; os outros 5 estão espalhados pelo prédio. Cada resposta certa libera sílabas e uma pista para o próximo lugar. Com todas as sílabas, voltem ao auditório e montem a resposta final.</p>
+    <p>Vocês têm <b>40 minutos</b>, que começam a contar quando tocarem em começar.</p>
+    <label>VOCÊS JÁ ESTÃO COM A CARTA DE ADA?</label>
+    <div class="row"><button id="go">Sim, começar</button></div>
+  </div></section>`;
+  $("go").onclick=()=>{S.start=Date.now();S.path=makePath();S.showing=null;S.id="t"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);save();push();watchMe();render()};
+  foot("");
 }
 function renderPin(){
   $("app").innerHTML=`<section class="card">${bar("")}<div class="body">
